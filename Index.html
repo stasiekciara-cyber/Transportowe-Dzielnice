@@ -1,1 +1,207 @@
-i
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Transportowe Dzielnice</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f2f5f9;
+    color:#172033;
+}
+
+/* ===== HEADER ===== */
+
+header{
+    background:#ffffff;
+    border-bottom:1px solid #dce3eb;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.header{
+    max-width:1200px;
+    margin:auto;
+    padding:15px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:800;
+    color:#1267d6;
+}
+
+.menu{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+}
+
+.menu button{
+    border:0;
+    background:#edf2f7;
+    padding:10px 13px;
+    border-radius:9px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.menu button:hover{
+    background:#1267d6;
+    color:white;
+}
+
+/* ===== SEKCJE ===== */
+
+section{
+    display:none;
+    max-width:1200px;
+    margin:auto;
+    padding:45px 20px;
+}
+
+section.active{
+    display:block;
+}
+
+/* ===== HERO ===== */
+
+.hero{
+    min-height:70vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.badge{
+    display:inline-block;
+    background:#1267d6;
+    color:white;
+    padding:8px 13px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:bold;
+    width:max-content;
+}
+
+.hero h1{
+    font-size:clamp(40px,8vw,75px);
+    margin:18px 0;
+}
+
+.hero p{
+    max-width:750px;
+    color:#66758a;
+    font-size:19px;
+    line-height:1.6;
+}
+
+/* ===== KARTY ===== */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:18px;
+    margin-top:30px;
+}
+
+.card{
+    background:white;
+    border:1px solid #dce3eb;
+    border-radius:18px;
+    padding:23px;
+    box-shadow:0 8px 25px rgba(20,40,70,.06);
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#68788c;
+    line-height:1.5;
+}
+
+/* ===== TYTUŁ ===== */
+
+.page-title{
+    margin-bottom:25px;
+}
+
+.page-title h2{
+    font-size:38px;
+    margin-bottom:8px;
+}
+
+.page-title p{
+    color:#68788c;
+}
+
+/* ===== TABELA ===== */
+
+.table-box{
+    overflow:auto;
+    background:white;
+    border-radius:16px;
+    border:1px solid #dce3eb;
+}
+
+table{
+    width:100%;
+    min-width:650px;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:14px;
+    text-align:left;
+    border-bottom:1px solid #e4e8ed;
+}
+
+th{
+    background:#edf2f7;
+}
+
+/* ===== PRZYSTANKI ===== */
+
+.search{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccd5df;
+    border-radius:10px;
+    font-size:16px;
+    margin-bottom:15px;
+}
+
+.stop{
+    background:white;
+    border:1px solid #dce3eb;
+    padding:16px;
+    margin-bottom:8px;
+    border-radius:10px;
+}
+
+.stop small{
+    color:#728095;
+}
+
+/* ===== LOGIN ===== */
+
+.login-box{
+    max-width:430px;
+   .
