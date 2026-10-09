@@ -1,1 +1,603 @@
 
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Administracyjny | TD Roblox</title>
+
+<style>
+* { box-sizing: border-box; }
+
+:root {
+  --blue: #0879e5;
+  --dark: #092344;
+  --bg: #f1f5fa;
+  --white: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: #172c45;
+}
+
+header {
+  background: var(--dark);
+  color: white;
+  padding: 19px;
+  border-bottom: 4px solid var(--blue);
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+header p {
+  margin: 7px 0 0;
+  color: #c5def8;
+  font-size: 13px;
+}
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 90px);
+}
+
+nav {
+  width: 235px;
+  flex-shrink: 0;
+  padding: 18px 12px;
+  background: #102e52;
+}
+
+nav button {
+  width: 100%;
+  padding: 13px 12px;
+  margin-bottom: 7px;
+  background: transparent;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+nav button:hover,
+nav button.active {
+  background: var(--blue);
+}
+
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+}
+
+h1 { margin-top: 0; font-size: 25px; }
+
+.muted { color: #64758a; font-size: 14px; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+
+.card, .panel {
+  background: var(--white);
+  padding: 19px;
+  border-radius: 13px;
+  box-shadow: 0 3px 14px #17385b0b;
+}
+
+.card span {
+  display: block;
+  color: #61738a;
+  font-size: 13px;
+}
+
+.card strong {
+  display: block;
+  font-size: 28px;
+  margin-top: 10px;
+}
+
+.panel { margin-bottom: 18px; }
+
+.panel h2 {
+  font-size: 18px;
+  margin-top: 0;
+}
+
+input, select, textarea {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 9px 0;
+  border: 1px solid #d0dbe8;
+  border-radius: 8px;
+  font: inherit;
+  background: white;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.action {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--blue);
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.action:hover { background: #0564bf; }
+
+.secondary {
+  background: #e5effb;
+  color: #124a82;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #e4eaf1;
+}
+
+th { color: #60738a; }
+
+.status {
+  color: #087044;
+  background: #dff7e9;
+  border-radius: 20px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.notice {
+  background: #fff4d8;
+  color: #74500b;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.section { display: none; }
+.section.active { display: block; }
+
+#feedback {
+  display: none;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #e0f5e8;
+  color: #145d36;
+  border-radius: 8px;
+}
+
+footer {
+  padding: 16px;
+  text-align: center;
+  color: #708096;
+  font-size: 12px;
+}
+
+@media(max-width: 700px) {
+  .layout { display: block; }
+  nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+  nav button { margin: 0; }
+  main { padding: 15px; }
+  .cards { grid-template-columns: 1fr; }
+  .table-wrap { overflow-x: auto; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">🚌 TRANSPORTOWE DZIELNICE</div>
+  <p>Panel administracyjny • Roblox</p>
+</header>
+
+<div class="layout">
+<nav aria-label="Menu administratora">
+  <button class="active" data-section="home">🏠 Pulpit</button>
+  <button data-section="lines">🚌 Linie</button>
+  <button data-section="fleet">🚍 Baza taboru</button>
+  <button data-section="stops">🚏 Przystanki</button>
+  <button data-section="staff">👥 Pracownicy</button>
+  <button data-section="news">📢 Aktualności</button>
+  <button data-section="settings">⚙️ Ustawienia</button>
+  <button id="backButton">↩ Strona główna</button>
+</nav>
+
+<main>
+<div id="feedback" role="status"></div>
+
+<section id="home" class="section active">
+  <h1>Pulpit administratora</h1>
+  <p class="muted">Zarządzaj projektem Transportowe Dzielnice Roblox.</p>
+
+  <div class="notice">
+    Tryb demonstracyjny. Zmiany są widoczne w tej sesji przeglądarki,
+    ale nie są synchronizowane z serwerem.
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <span>Linie w wykazie</span>
+      <strong id="lineCount">0</strong>
+    </div>
+    <div class="card">
+      <span>Pojazdy w bazie</span>
+      <strong id="fleetCount">0</strong>
+    </div>
+    <div class="card">
+      <span>Przystanki w wykazie</span>
+      <strong id="stopCount">0</strong>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Szybkie działania</h2>
+    <button class="action" data-go="lines">Dodaj linię</button>
+    <button class="action secondary" data-go="fleet">Dodaj pojazd</button>
+    <button class="action secondary" data-go="news">Napisz aktualność</button>
+  </div>
+</section>
+
+<section id="lines" class="section">
+  <h1>Zarządzanie liniami</h1>
+  <div class="panel">
+    <h2>Dodaj linię</h2>
+    <form id="lineForm">
+      <input id="lineNumber" placeholder="Numer linii, np. G1" required>
+      <input id="lineRoute" placeholder="Trasa, np. Osiedlowa – Metro" required>
+      <select id="lineType">
+        <option>Autobusowa</option>
+        <option>Tramwajowa</option>
+        <option>Metra</option>
+        <option>Kolejowa</option>
+        <option>Nocna</option>
+      </select>
+      <button class="action">Dodaj linię</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Wykaz linii</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Numer</th><th>Trasa</th><th>Rodzaj</th><th>Akcja</th></tr></thead>
+        <tbody id="lineTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="fleet" class="section">
+  <h1>Baza taboru</h1>
+  <div class="panel">
+    <h2>Dodaj pojazd</h2>
+    <form id="fleetForm">
+      <input id="fleetNumber" placeholder="Numer taborowy, np. 7730" required>
+      <input id="fleetModel" placeholder="Model pojazdu" required>
+      <select id="fleetType">
+        <option>Autobus</option>
+        <option>Tramwaj</option>
+        <option>Pociąg</option>
+      </select>
+      <input id="fleetLine" placeholder="Przypisana linia, np. G1">
+      <select id="fleetStatus">
+        <option>Sprawny</option>
+        <option>W naprawie</option>
+        <option>Rezerwa</option>
+        <option>Wycofany</option>
+      </select>
+      <button class="action">Dodaj pojazd</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Wykaz pojazdów</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Numer</th><th>Model</th><th>Rodzaj</th><th>Linia</th><th>Status</th><th>Akcja</th></tr></thead>
+        <tbody id="fleetTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="stops" class="section">
+  <h1>Zarządzanie przystankami</h1>
+  <div class="panel">
+    <h2>Dodaj przystanek</h2>
+    <form id="stopForm">
+      <input id="stopName" placeholder="Nazwa przystanku" required>
+      <input id="stopLines" placeholder="Obsługiwane linie">
+      <select id="stopType">
+        <option>Zwykły</option>
+        <option>Pętla</option>
+        <option>Metro</option>
+        <option>Dworzec</option>
+        <option>Na żądanie</option>
+      </select>
+      <button class="action">Dodaj przystanek</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Wykaz przystanków</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nazwa</th><th>Linie</th><th>Rodzaj</th><th>Akcja</th></tr></thead>
+        <tbody id="stopTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="staff" class="section">
+  <h1>Pracownicy i role</h1>
+  <div class="notice">
+    To jest lokalny wykaz demonstracyjny, a nie rzeczywisty system
+    nadawania uprawnień. Nie pozwala bezpiecznie zarządzać kontami.
+  </div>
+  <div class="panel">
+    <h2>Dodaj wpis pracownika</h2>
+    <form id="staffForm">
+      <input id="staffName" placeholder="Nazwa użytkownika" required>
+      <select id="staffRole">
+        <option>Kierowca</option>
+        <option>Motorniczy</option>
+        <option>Dyspozytor</option>
+        <option>Moderator</option>
+        <option>Administrator</option>
+      </select>
+      <button class="action">Dodaj do wykazu</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Wykaz pracowników</h2>
+    <table>
+      <thead><tr><th>Użytkownik</th><th>Rola</th><th>Akcja</th></tr></thead>
+      <tbody id="staffTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="news" class="section">
+  <h1>Aktualności TD</h1>
+  <div class="panel">
+    <h2>Utwórz aktualność</h2>
+    <form id="newsForm">
+      <input id="newsTitle" placeholder="Tytuł ogłoszenia" required>
+      <textarea id="newsContent" placeholder="Treść ogłoszenia" required></textarea>
+      <button class="action">Opublikuj w podglądzie</button>
+    </form>
+  </div>
+  <div id="newsList"></div>
+</section>
+
+<section id="settings" class="section">
+  <h1>Ustawienia panelu</h1>
+  <div class="panel">
+    <h2>Informacje o projekcie</h2>
+    <p>Projekt: Transportowe Dzielnice Roblox</p>
+    <p>Wersja interfejsu: 1.0</p>
+    <p>Platforma: GitHub Pages</p>
+    <p>Tryb: demonstracyjny</p>
+    <button id="clearButton" class="action secondary" type="button">
+      Wyczyść dane demonstracyjne
+    </button>
+  </div>
+  <div class="notice">
+    Nie wpisuj tutaj haseł ani poufnych danych. Do rzeczywistego
+    panelu potrzebny jest backend z kontrolą dostępu.
+  </div>
+</section>
+</main>
+</div>
+
+<footer>© 2026 Transportowe Dzielnice Roblox</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const data = {
+  lines: [],
+  fleet: [],
+  stops: [],
+  staff: [],
+  news: []
+};
+
+function notify(text) {
+  $("feedback").textContent = text;
+  $("feedback").style.display = "block";
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => {
+    s.classList.toggle("active", s.id === id);
+  });
+  document.querySelectorAll("nav button[data-section]").forEach(b => {
+    b.classList.toggle("active", b.dataset.section === id);
+  });
+  $("feedback").style.display = "none";
+}
+
+document.querySelectorAll("nav button[data-section]").forEach(b => {
+  b.addEventListener("click", () => showSection(b.dataset.section));
+});
+
+document.querySelectorAll("[data-go]").forEach(b => {
+  b.addEventListener("click", () => showSection(b.dataset.go));
+});
+
+$("backButton").addEventListener("click", () => {
+  location.href = "index.html";
+});
+
+function cell(value) {
+  const td = document.createElement("td");
+  td.textContent = value ?? "";
+  return td;
+}
+
+function renderTable(id, rows, columns, onDelete) {
+  const tbody = $(id);
+  tbody.replaceChildren();
+
+  rows.forEach((row, index) => {
+    const tr = document.createElement("tr");
+    columns.forEach(key => tr.appendChild(cell(row[key])));
+
+    const td = document.createElement("td");
+    const button = document.createElement("button");
+    button.className = "action secondary";
+    button.type = "button";
+    button.textContent = "Usuń";
+    button.addEventListener("click", () => {
+      onDelete(index);
+      renderAll();
+      notify("Usunięto wpis z lokalnego wykazu.");
+    });
+    td.appendChild(button);
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  });
+}
+
+function renderAll() {
+  renderTable("lineTable", data.lines,
+    ["number", "route", "type"],
+    i => data.lines.splice(i, 1));
+
+  renderTable("fleetTable", data.fleet,
+    ["number", "model", "type", "line", "status"],
+    i => data.fleet.splice(i, 1));
+
+  renderTable("stopTable", data.stops,
+    ["name", "lines", "type"],
+    i => data.stops.splice(i, 1));
+
+  renderTable("staffTable", data.staff,
+    ["name", "role"],
+    i => data.staff.splice(i, 1));
+
+  $("lineCount").textContent = data.lines.length;
+  $("fleetCount").textContent = data.fleet.length;
+  $("stopCount").textContent = data.stops.length;
+
+  $("newsList").replaceChildren();
+  data.news.forEach(item => {
+    const article = document.createElement("article");
+    article.className = "panel";
+    const title = document.createElement("h2");
+    title.textContent = item.title;
+    const content = document.createElement("p");
+    content.textContent = item.content;
+    article.append(title, content);
+    $("newsList").appendChild(article);
+  });
+}
+
+$("lineForm").addEventListener("submit", e => {
+  e.preventDefault();
+  data.lines.push({
+    number: $("lineNumber").value.trim(),
+    route: $("lineRoute").value.trim(),
+    type: $("lineType").value
+  });
+  e.target.reset();
+  renderAll();
+  notify("Dodano linię do lokalnego wykazu.");
+});
+
+$("fleetForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const number = $("fleetNumber").value.trim();
+
+  if (data.fleet.some(v => v.number === number)) {
+    notify("Ten numer taborowy już istnieje w wykazie.");
+    return;
+  }
+
+  data.fleet.push({
+    number,
+    model: $("fleetModel").value.trim(),
+    type: $("fleetType").value,
+    line: $("fleetLine").value.trim() || "Brak",
+    status: $("fleetStatus").value
+  });
+  e.target.reset();
+  renderAll();
+  notify("Dodano pojazd do lokalnej bazy.");
+});
+
+$("stopForm").addEventListener("submit", e => {
+  e.preventDefault();
+  data.stops.push({
+    name: $("stopName").value.trim(),
+    lines: $("stopLines").value.trim() || "Nie podano",
+    type: $("stopType").value
+  });
+  e.target.reset();
+  renderAll();
+  notify("Dodano przystanek do lokalnego wykazu.");
+});
+
+$("staffForm").addEventListener("submit", e => {
+  e.preventDefault();
+  data.staff.push({
+    name: $("staffName").value.trim(),
+    role: $("staffRole").value
+  });
+  e.target.reset();
+  renderAll();
+  notify("Dodano wpis do demonstracyjnego wykazu pracowników.");
+});
+
+$("newsForm").addEventListener("submit", e => {
+  e.preventDefault();
+  data.news.unshift({
+    title: $("newsTitle").value.trim(),
+    content: $("newsContent").value.trim()
+  });
+  e.target.reset();
+  renderAll();
+  notify("Aktualność dodano do podglądu. Nie opublikowano jej na stronie.");
+});
+
+$("clearButton").addEventListener("click", () => {
+  if (!confirm("Czy wyczyścić wszystkie dane demonstracyjne?")) return;
+  Object.keys(data).forEach(key => data[key].length = 0);
+  renderAll();
+  notify("Wyczyszczono dane demonstracyjne.");
+});
+
+renderAll();
+</script>
+</body>
+  </html>
+  
