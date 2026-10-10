@@ -1,1 +1,471 @@
 
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel TD - Kierowca i Dyspozytor</title>
+<style>
+:root {
+  --blue:#087be5;
+  --dark:#082747;
+  --bg:#f1f6fc;
+  --white:#fff;
+  --text:#20344b;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header {
+  background:linear-gradient(120deg,#062449,#087be5);
+  color:white;
+  text-align:center;
+  padding:25px 15px;
+  border-bottom:5px solid #65b6ff;
+}
+header h1 { margin:8px 0; }
+nav {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  background:white;
+  padding:12px;
+}
+nav a {
+  text-decoration:none;
+  color:var(--blue);
+  font-weight:bold;
+  padding:8px;
+}
+main { max-width:1000px; margin:auto; padding:15px; }
+.panel {
+  background:white;
+  padding:18px;
+  border-radius:13px;
+  margin:15px 0;
+  box-shadow:0 3px 12px #0000000a;
+}
+h2 { color:var(--blue); margin-top:0; }
+input,select,textarea {
+  width:100%;
+  padding:12px;
+  margin:5px 0 12px;
+  border:1px solid #cbd8e8;
+  border-radius:8px;
+  font-size:15px;
+}
+button {
+  border:0;
+  border-radius:8px;
+  padding:11px 15px;
+  margin:3px;
+  background:var(--blue);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+button.secondary { background:#e6f1ff; color:#0756a4; }
+button.delete { background:#b52d3a; }
+.row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.notice {
+  background:#fff2d7;
+  color:#755000;
+  padding:14px;
+  border-radius:10px;
+  line-height:1.5;
+}
+.card {
+  background:#f8fbff;
+  border:1px solid #d9e5f1;
+  border-left:5px solid var(--blue);
+  padding:13px;
+  border-radius:9px;
+  margin:10px 0;
+  overflow-wrap:anywhere;
+}
+.small { color:#68798c; font-size:13px; line-height:1.5; }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.stat {
+  background:#eaf4ff;
+  padding:15px;
+  border-radius:9px;
+  text-align:center;
+}
+.stat strong {
+  display:block;
+  color:var(--blue);
+  font-size:25px;
+}
+footer {
+  background:var(--dark);
+  color:white;
+  text-align:center;
+  padding:22px;
+}
+@media(max-width:550px) {
+  .row { grid-template-columns:1fr; gap:0; }
+  .stats { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="font-size:38px">🚌 🚊 🖥️</div>
+  <h1>TRANSPORTOWE DZIELNICE</h1>
+  <p>Panel Kierowcy i Dyspozytora</p>
+  <strong>TD ROBLOX 3.0</strong>
+</header>
+
+<nav>
+  <a href="#logowanie">Logowanie demo</a>
+  <a href="#kierowca">Kierowca</a>
+  <a href="#dyspozytor">Dyspozytor</a>
+  <a href="#kursy">Kursy</a>
+  <a href="przystanki.html">Przystanki</a>
+  <a href="index.html">Strona główna</a>
+</nav>
+
+<main>
+<div class="notice">
+  <strong>Uwaga — wersja demonstracyjna.</strong>
+  Nie używaj prawdziwych haseł. Ten plik nie ma bezpiecznego logowania ani wspólnej bazy danych. Dane kursów zapisują się tylko w tej przeglądarce.
+</div>
+
+<section class="panel" id="logowanie">
+  <h2>🔐 Logowanie demonstracyjne</h2>
+  <p class="small">Wybór roli pokazuje odpowiedni panel. Nie weryfikuje tożsamości użytkownika.</p>
+
+  <label for="nazwa">Nazwa użytkownika</label>
+  <input id="nazwa" placeholder="Np. Kierowca TD" maxlength="40">
+
+  <label for="rola">Wybierz rolę</label>
+  <select id="rola">
+    <option value="kierowca">Kierowca autobusu</option>
+    <option value="motorniczy">Motorniczy tramwaju</option>
+    <option value="dyspozytor">Dyspozytor</option>
+  </select>
+
+  <button onclick="zaloguj()">Otwórz panel</button>
+  <button class="secondary" onclick="wyloguj()">Wyloguj z demo</button>
+  <p id="statusLogowania" class="small">Nie wybrano jeszcze roli.</p>
+</section>
+
+<section class="panel" id="kierowca">
+  <h2>🧑‍✈️ Panel kierowcy</h2>
+
+  <label for="kierowcaNazwa">Kierowca / motorniczy</label>
+  <input id="kierowcaNazwa" placeholder="Nazwa użytkownika">
+
+  <div class="row">
+    <div>
+      <label for="pojazdTyp">Rodzaj pojazdu</label>
+      <select id="pojazdTyp">
+        <option>Autobus</option>
+        <option>Tramwaj</option>
+      </select>
+    </div>
+    <div>
+      <label for="linia">Linia</label>
+      <select id="linia">
+        <option>G1</option>
+        <option>G2</option>
+        <option>G3</option>
+        <option>X1</option>
+        <option>X3</option>
+        <option>X7</option>
+        <option>VB8</option>
+        <option>V1</option>
+        <option>A1</option>
+        <option>A3</option>
+        <option>A4</option>
+        <option>H1</option>
+        <option>H2</option>
+        <option>H3</option>
+        <option>N1</option>
+      </select>
+    </div>
+  </div>
+
+  <label for="numer">Numer taborowy</label>
+  <input id="numer" placeholder="Np. TD-001" maxlength="20">
+
+  <label for="kierunek">Kierunek / relacja</label>
+  <input id="kierunek" placeholder="Np. Zajezdnia PKS → Osiedlowa" maxlength="100">
+
+  <label for="statusKursu">Status kursu</label>
+  <select id="statusKursu">
+    <option>Przygotowanie</option>
+    <option>W trasie</option>
+    <option>Opóźnienie</option>
+    <option>Zakończony</option>
+  </select>
+
+  <label for="uwagi">Uwagi</label>
+  <textarea id="uwagi" maxlength="300" placeholder="Informacja o kursie"></textarea>
+
+  <button onclick="dodajKurs()">▶ Zgłoś kurs</button>
+  <button class="secondary" onclick="przyklad()">Wstaw przykład G1</button>
+</section>
+
+<section class="panel" id="dyspozytor">
+  <h2>🖥️ Panel dyspozytora</h2>
+  <p class="small">Przeglądaj kursy i aktualizuj ich statusy na tym urządzeniu.</p>
+
+  <label for="filtr">Filtr kursów</label>
+  <select id="filtr" onchange="pokazKursy()">
+    <option value="Wszystkie">Wszystkie kursy</option>
+    <option>Przygotowanie</option>
+    <option>W trasie</option>
+    <option>Opóźnienie</option>
+    <option>Zakończony</option>
+  </select>
+
+  <label for="komunikat">Komunikat dla kierowców</label>
+  <textarea id="komunikat" maxlength="300" placeholder="Np. Uwaga: zmiana trasy linii H2"></textarea>
+  <button onclick="dodajKomunikat()">📢 Opublikuj komunikat</button>
+
+  <div id="komunikaty"></div>
+</section>
+
+<section class="panel" id="kursy">
+  <h2>📋 Lista kursów</h2>
+
+  <div class="stats">
+    <div class="stat"><strong id="liczba">0</strong>Wszystkie</div>
+    <div class="stat"><strong id="aktywne">0</strong>W trasie</div>
+    <div class="stat"><strong id="opoznione">0</strong>Opóźnione</div>
+  </div>
+
+  <div id="listaKursow"></div>
+  <button class="delete" onclick="usunWszystkie()">Usuń wszystkie kursy demo</button>
+</section>
+
+<section class="panel">
+  <h2>🔒 Jak uruchomić prawdziwe logowanie?</h2>
+  <ul>
+    <li>Potrzebny jest backend lub usługa uwierzytelniania.</li>
+    <li>Hasła nie mogą być sprawdzane wyłącznie w kodzie HTML.</li>
+    <li>Uprawnienia dyspozytora muszą być kontrolowane przez serwer.</li>
+    <li>GitHub Pages udostępnia statyczne pliki, a nie uruchamia własnego serwera.</li>
+  </ul>
+  <p class="small">Ta strona nie jest połączona z Roblox Studio ani z serwerem gry TD.</p>
+</section>
+</main>
+
+<footer>
+  <strong>Transportowe Dzielnice Roblox</strong>
+  <p>Panel demonstracyjny TD 3.0</p>
+</footer>
+
+<script>
+let kursy = wczytaj("td_kursy_demo");
+let komunikaty = wczytaj("td_komunikaty_demo");
+
+function wczytaj(klucz) {
+  try {
+    const dane = JSON.parse(localStorage.getItem(klucz));
+    return Array.isArray(dane) ? dane : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function zapisz() {
+  try {
+    localStorage.setItem("td_kursy_demo", JSON.stringify(kursy));
+    localStorage.setItem("td_komunikaty_demo", JSON.stringify(komunikaty));
+  } catch(e) {
+    alert("Przeglądarka nie pozwala zapisać danych.");
+  }
+}
+
+function bezpieczny(tekst) {
+  return String(tekst).replace(/[&<>"']/g, znak => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  })[znak]);
+}
+
+function zaloguj() {
+  const nazwa = document.getElementById("nazwa").value.trim() || "Użytkownik demo";
+  const rola = document.getElementById("rola").value;
+  const nazwy = {
+    kierowca:"Kierowca autobusu",
+    motorniczy:"Motorniczy tramwaju",
+    dyspozytor:"Dyspozytor"
+  };
+
+  document.getElementById("statusLogowania").textContent =
+    "Widok demo: " + nazwa + " — " + nazwy[rola] +
+    ". Nie jest to bezpieczne logowanie.";
+
+  document.getElementById("kierowcaNazwa").value = nazwa;
+
+  if(rola === "motorniczy") {
+    document.getElementById("pojazdTyp").value = "Tramwaj";
+  } else if(rola === "kierowca") {
+    document.getElementById("pojazdTyp").value = "Autobus";
+  }
+
+  document.getElementById(
+    rola === "dyspozytor" ? "dyspozytor" : "kierowca"
+  ).scrollIntoView({behavior:"smooth"});
+}
+
+function wyloguj() {
+  document.getElementById("statusLogowania").textContent =
+    "Zamknięto widok demo. Nie była aktywna zabezpieczona sesja.";
+}
+
+function przyklad() {
+  document.getElementById("kierowcaNazwa").value = "Kierowca TD";
+  document.getElementById("pojazdTyp").value = "Autobus";
+  document.getElementById("linia").value = "G1";
+  document.getElementById("numer").value = "TD-001";
+  document.getElementById("kierunek").value =
+    "Zajezdnia PKS → Osiedlowa";
+  document.getElementById("statusKursu").value = "W trasie";
+  document.getElementById("uwagi").value = "Kurs testowy";
+}
+
+function dodajKurs() {
+  const kierowca = document.getElementById("kierowcaNazwa").value.trim();
+  const numer = document.getElementById("numer").value.trim();
+  const kierunek = document.getElementById("kierunek").value.trim();
+
+  if(!kierowca || !numer || !kierunek) {
+    alert("Wpisz kierowcę, numer taborowy i kierunek.");
+    return;
+  }
+
+  kursy.unshift({
+    id: Date.now().toString(),
+    kierowca,
+    typ: document.getElementById("pojazdTyp").value,
+    linia: document.getElementById("linia").value,
+    numer,
+    kierunek,
+    status: document.getElementById("statusKursu").value,
+    uwagi: document.getElementById("uwagi").value.trim(),
+    czas: new Date().toLocaleString("pl-PL")
+  });
+
+  zapisz();
+  pokazKursy();
+  alert("Dodano kurs demonstracyjny.");
+}
+
+function zmienStatus(id, status) {
+  const kurs = kursy.find(k => k.id === id);
+  if(kurs) {
+    kurs.status = status;
+    zapisz();
+    pokazKursy();
+  }
+}
+
+function usunKurs(id) {
+  kursy = kursy.filter(k => k.id !== id);
+  zapisz();
+  pokazKursy();
+}
+
+function usunWszystkie() {
+  if(confirm("Czy usunąć wszystkie kursy demo z tej przeglądarki?")) {
+    kursy = [];
+    zapisz();
+    pokazKursy();
+  }
+}
+
+function dodajKomunikat() {
+  const tekst = document.getElementById("komunikat").value.trim();
+  if(!tekst) {
+    alert("Najpierw wpisz treść komunikatu.");
+    return;
+  }
+
+  komunikaty.unshift({
+    id: Date.now().toString(),
+    tekst,
+    czas: new Date().toLocaleString("pl-PL")
+  });
+
+  document.getElementById("komunikat").value = "";
+  zapisz();
+  pokazKomunikaty();
+}
+
+function usunKomunikat(id) {
+  komunikaty = komunikaty.filter(k => k.id !== id);
+  zapisz();
+  pokazKomunikaty();
+}
+
+function pokazKomunikaty() {
+  document.getElementById("komunikaty").innerHTML =
+    komunikaty.length
+    ? komunikaty.map(k => `
+      <div class="card">
+        <strong>${bezpieczny(k.tekst)}</strong>
+        <p class="small">${bezpieczny(k.czas)}</p>
+        <button class="delete" onclick="usunKomunikat('${bezpieczny(k.id)}')">Usuń</button>
+      </div>`).join("")
+    : '<p class="small">Brak komunikatów.</p>';
+}
+
+function pokazKursy() {
+  const filtr = document.getElementById("filtr").value;
+  const widoczne = kursy.filter(k =>
+    filtr === "Wszystkie" || k.status === filtr
+  );
+
+  document.getElementById("liczba").textContent = kursy.length;
+  document.getElementById("aktywne").textContent =
+    kursy.filter(k => k.status === "W trasie").length;
+  document.getElementById("opoznione").textContent =
+    kursy.filter(k => k.status === "Opóźnienie").length;
+
+  document.getElementById("listaKursow").innerHTML =
+    widoczne.length
+    ? widoczne.map(k => `
+      <div class="card">
+        <h3>${bezpieczny(k.linia)} • ${bezpieczny(k.numer)}</h3>
+        <p><strong>${bezpieczny(k.kierunek)}</strong></p>
+        <p>${bezpieczny(k.kierowca)} • ${bezpieczny(k.typ)}</p>
+        <p>Status: <strong>${bezpieczny(k.status)}</strong></p>
+        ${k.uwagi ? `<p class="small">Uwagi: ${bezpieczny(k.uwagi)}</p>` : ""}
+        <p class="small">Dodano: ${bezpieczny(k.czas)}</p>
+        <label for="status-${bezpieczny(k.id)}">Zmień status</label>
+        <select id="status-${bezpieczny(k.id)}"
+          onchange="zmienStatus('${bezpieczny(k.id)}',this.value)">
+          ${["Przygotowanie","W trasie","Opóźnienie","Zakończony"].map(s =>
+            `<option ${k.status === s ? "selected" : ""}>${s}</option>`
+          ).join("")}
+        </select>
+        <button class="delete" onclick="usunKurs('${bezpieczny(k.id)}')">Usuń kurs</button>
+      </div>`).join("")
+    : '<p class="small">Brak kursów. Dodaj kurs w panelu kierowcy.</p>';
+}
+
+pokazKursy();
+pokazKomunikaty();
+</script>
+</body>
+  </html>
+  
