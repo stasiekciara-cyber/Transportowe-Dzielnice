@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Przystanki TD | Transportowe Dzielnice</title>
+<style>
+:root{--blue:#0756a4;--dark:#082747;--light:#eaf3ff;--bg:#f3f7fc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#20344b;font-family:Arial,sans-serif}
+header{background:linear-gradient(130deg,#06264b,#087be5);color:white;padding:24px 16px;text-align:center}
+header h1{margin:8px 0;font-size:26px}
+nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:white;padding:12px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0001}
+nav a{color:var(--blue);text-decoration:none;font-weight:bold;padding:8px}
+main{max-width:1100px;margin:auto;padding:16px}
+section,.panel,.stat{background:white;border-radius:14px;padding:18px;margin:15px 0;box-shadow:0 3px 12px #163c6010}
+h2{color:var(--blue);margin-top:0}
+input,select{width:100%;padding:12px;margin:5px 0 12px;border:1px solid #cbd8e8;border-radius:8px;font-size:15px}
+button{border:0;border-radius:8px;background:var(--blue);color:white;padding:11px 14px;font-weight:bold;cursor:pointer;margin:3px}
+button.secondary{background:#e4efff;color:var(--blue)}
+button.delete{background:#b52b35}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:white;border:1px solid #dce7f3;border-left:5px solid #087be5;border-radius:10px;padding:14px;overflow-wrap:anywhere}
+.card h3{margin:0 0 9px}
+.tag{display:inline-block;background:var(--light);color:var(--blue);padding:5px 8px;border-radius:20px;font-size:12px;margin:3px 0}
+.small{color:#64748b;font-size:13px;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{text-align:center;margin:0;padding:14px}
+.stat strong{font-size:25px;color:var(--blue);display:block}
+.route{border-left:4px solid #087be5;padding:8px 12px;margin:12px 0;background:#f5f9ff;border-radius:6px}
+.stopdot{display:inline-block;width:10px;height:10px;border:3px solid #087be5;border-radius:50%;margin-right:8px}
+.map{display:grid;grid-template-columns:1fr;gap:12px}
+.mapline{background:#f7faff;border:1px solid #d9e7f8;border-radius:12px;padding:14px}
+.mapline h3{margin:0 0 10px;color:var(--blue)}
+.mapstop{display:inline-block;background:white;border:1px solid #bdd4ef;padding:7px 9px;margin:3px;border-radius:7px;font-size:13px}
+.warning{background:#fff2d7;color:#775000;border-radius:10px;padding:14px;line-height:1.6}
+footer{text-align:center;background:var(--dark);color:white;padding:24px;margin-top:25px}
+.hidden{display:none!important}
+@media(max-width:500px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:span 2}header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:38px">🚌 🚊 🚏</div>
+  <h1>TRANSPORTOWE DZIELNICE</h1>
+  <p>Centralna baza przystanków, pętli i zajezdni</p>
+  <strong>System infrastruktury TD 2.0</strong>
+</header>
+
+<nav>
+  <a href="#start">🏠 Start</a>
+  <a href="#wykaz">🚏 Wykaz</a>
+  <a href="#mapa">🗺️ Mapa</a>
+  <a href="#linie">🚌 Linie</a>
+  <a href="#admin">⚙️ Administrator</a>
+</nav>
+
+<main>
+<section id="start">
+  <h2>Panel komunikacyjny TD</h2>
+  <p>Wyszukuj obiekty, sprawdzaj znane trasy i zarządzaj własnym wykazem infrastruktury.</p>
+  <div class="stats">
+    <div class="stat"><strong id="stopCount">0</strong>Przystanki</div>
+    <div class="stat"><strong id="loopCount">0</strong>Pętle i krańce</div>
+    <div class="stat"><strong id="depotCount">0</strong>Zajezdnie</div>
+  </div>
+  <p class="small">Dane początkowe pochodzą z dotychczasowych ustaleń projektu. Wykaz może być niekompletny.</p>
+</section>
+
+<section id="wykaz">
+  <h2>🚏 Wykaz infrastruktury</h2>
+  <label for="search">Szukaj po nazwie, linii lub rodzaju:</label>
+  <input id="search" placeholder="Np. Osiedlowa, G1, zajezdnia..." oninput="renderAll()">
+  <div>
+    <button class="active" onclick="setFilter('all',this)">Wszystko</button>
+    <button class="secondary" onclick="setFilter('stop',this)">Przystanki</button>
+    <button class="secondary" onclick="setFilter('loop',this)">Pętle</button>
+    <button class="secondary" onclick="setFilter('depot',this)">Zajezdnie</button>
+  </div>
+  <div id="placeList" class="grid" style="margin-top:15px"></div>
+  <p id="empty" class="small hidden">Brak wyników. Spróbuj innej nazwy.</p>
+</section>
+
+<section id="mapa">
+  <h2>🗺️ Schemat połączeń</h2>
+  <p class="small">To schemat tras zapisanych w projekcie, a nie geograficzna mapa miasta.</p>
+  <div id="mapList" class="map"></div>
+</section>
+
+<section id="linie">
+  <h2>🚌 Linie i kolejność przystanków</h2>
+  <label for="lineSelect">Wybierz linię:</label>
+  <select id="lineSelect" onchange="renderLine()"></select>
+  <div id="lineDetails"></div>
+</section>
+
+<section id="admin">
+  <h2>⚙️ Panel zarządzania infrastrukturą</h2>
+  <div class="warning">
+    Panel działa w tej przeglądarce. Nie jest zabezpieczonym panelem internetowym i nie synchronizuje danych pomiędzy użytkownikami. Nie wpisuj tu haseł ani danych prywatnych.
+  </div>
+  <h3>Dodaj nowy obiekt</h3>
+  <label for="newName">Nazwa obiektu</label>
+  <input id="newName" placeholder="Np. Plac Transportowy">
+  <label for="newType">Rodzaj obiektu</label>
+  <select id="newType">
+    <option value="stop">Przystanek</option>
+    <option value="loop">Pętla / kraniec</option>
+    <option value="depot">Zajezdnia</option>
+  </select>
+  <label for="newLine">Linia lub linie (opcjonalnie)</label>
+  <input id="newLine" placeholder="Np. G1, G2">
+  <button onclick="addPlace()">➕ Dodaj obiekt</button>
+  <button class="secondary" onclick="exportData()">⬇️ Eksportuj bazę JSON</button>
+  <button class="secondary" onclick="document.getElementById('importFile').click()">⬆️ Importuj bazę JSON</button>
+  <input id="importFile" type="file" accept=".json,application/json" class="hidden" onchange="importData(event)">
+  <button class="delete" onclick="resetData()">Przywróć bazę początkową</button>
+  <p class="small">Dodane obiekty można usunąć z listy poniżej. Eksport JSON pozwala przenieść bazę na inne urządzenie.</p>
+  <div id="adminList" class="grid"></div>
+</section>
+</main>
+
+<footer>
+  <strong>Transportowe Dzielnice Roblox</strong>
+  <p>Wirtualna komunikacja miejska • 2026</p>
+</footer>
+
+<script>
+const initialPlaces = [
+ {id:"p1",name:"Osiedlowa",type:"stop",lines:["G1"]},
+ {id:"p2",name:"Zajezdnia MZK",type:"depot",lines:["G1"]},
+ {id:"p3",name:"Zajezdnia Osiedle Derby",type:"depot",lines:["G1"]},
+ {id:"p4",name:"Zajezdnia PKS",type:"depot",lines:["G1","A1"]},
+ {id:"p5",name:"Zajezdnia Koronowska",type:"depot",lines:["X1"]},
+ {id:"p6",name:"Zamkowa",type:"stop",lines:["G2"]},
+ {id:"p7",name:"Osiedle MZK",type:"stop",lines:["G2"]},
+ {id:"p8",name:"Mazowieckie Centrum Neuropsychiatrii Rybno",type:"stop",lines:["G2"]},
+ {id:"p9",name:"Osiedle Ząbkowskiego",type:"stop",lines:["G2"]},
+ {id:"p10",name:"Osiedle Zamkowe",type:"loop",lines:["G2"]},
+ {id:"p11",name:"Metro Polinezyjskie",type:"stop",lines:["X3"]},
+ {id:"p12",name:"Ośrodek Psychiatrii Dzieci i Młodzieży",type:"stop",lines:["X7"]},
+ {id:"p13",name:"Dworzec Kolejowy – Pętla",type:"loop",lines:["VB8","V1"]},
+ {id:"p14",name:"Metro Karolin",type:"stop",lines:["A1"]},
+ {id:"p15",name:"Zajezdnia Woronicza",type:"depot",lines:["H2"]},
+ {id:"p16",name:"Woronicza",type:"stop",lines:["H2"]},
+ {id:"p17",name:"Samochodowa",type:"stop",lines:["H2"]},
+ {id:"p18",name:"Telewizja Polska",type:"stop",lines:["H2"]},
+ {id:"p19",name:"Metro Wierzbno",type:"stop",lines:["H2"]},
+ {id:"p20",name:"Wielicka",type:"stop",lines:["H2"]},
+ {id:"p21",name:"Królikarnia",type:"stop",lines:["H2"]},
+ {id:"p22",name:"Bukowińska",type:"stop",lines:["H2"]},
+ {id:"p23",name:"Imielińska",type:"stop",lines:["H2"]},
+ {id:"p24",name:"Fort Piłsudskiego",type:"stop",lines:["H2"]},
+ {id:"p25",name:"Idzikowskiego",type:"stop",lines:["H2"]},
+ {id:"p26",name:"Gołkowska",type:"stop",lines:["H2"]},
+ {id:"p27",name:"Osiedle Bernardyńska",type:"stop",lines:["H2"]},
+ {id:"p28",name:"Jeziorko Czerniakowskie",type:"stop",lines:["H2"]},
+ {id:"p29",name:"Sypniewska",type:"stop",lines:["H2 — na żądanie"]},
+ {id:"p30",name:"Statkowskiego",type:"stop",lines:["H2 — na żądanie"]},
+ {id:"p31",name:"EC Siekierki",type:"loop",lines:["H2"]}
+];
+
+const routes = [
+ {name:"G1",title:"Trasa G1",stops:["Zajezdnia PKS","Osiedlowa","Zajezdnia MZK","Zajezdnia Osiedle Derby"]},
+ {name:"G2",title:"Trasa G2",stops:["Zamkowa","Osiedle MZK","Mazowieckie Centrum Neuropsychiatrii Rybno","Osiedle Ząbkowskiego","Osiedle Zamkowe"]},
+ {name:"X1",title:"Linia X1",stops:["Zajezdnia Koronowska"]},
+ {name:"X3",title:"Linia X3",stops:["Metro Polinezyjskie"]},
+ {name:"X7",title:"Linia X7",stops:["Ośrodek Psychiatrii Dzieci i Młodzieży"]},
+ {name:"VB8",title:"Linia zastępcza VB8",stops:["Dworzec Kolejowy – Pętla"]},
+ {name:"V1",title:"Linia V1",stops:["Dworzec Kolejowy – Pętla"]},
+ {name:"A1",title:"Linia nocna A1",stops:["Zajezdnia PKS","Metro Karolin"]},
+ {name:"H2",title:"Linia specjalna H2 — Halloween",stops:[
+ "Zajezdnia Woronicza","Woronicza","Samochodowa","Telewizja Polska",
+ "Metro Wierzbno","Wielicka","Królikarnia","Bukowińska","Imielińska",
+ "Fort Piłsudskiego","Idzikowskiego","Gołkowska","Osiedle Bernardyńska",
+ "Jeziorko Czerniakowskie","Sypniewska","Statkowskiego","EC Siekierki"
+ ]}
+];
+
+const typeNames={stop:"Przystanek",loop:"Pętla / kraniec",depot:"Zajezdnia"};
+let filter="all";
+let places=loadPlaces();
+
+function loadPlaces(){
+ try{
+  const saved=localStorage.getItem("tdInfrastructureV2");
+  if(saved){
+   const data=JSON.parse(saved);
+   if(Array.isArray(data)) return data;
+  }
+ }catch(e){}
+ return JSON.parse(JSON.stringify(initialPlaces));
+}
+function savePlaces(){
+ try{localStorage.setItem("tdInfrastructureV2",JSON.stringify(places));}
+ catch(e){alert("Nie udało się zapisać danych w tej przeglądarce.");}
+}
+function esc(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function renderAll(){
+ const q=document.getElementById("search").value.toLocaleLowerCase("pl");
+ const filtered=places.filter(p=>{
+  const matchType=filter==="all"||p.type===filter;
+  const matchText=(p.name+" "+(p.lines||[]).join(" ")+" "+typeNames[p.type]).toLocaleLowerCase("pl").includes(q);
+  return matchType&&matchText;
+ });
+ document.getElementById("placeList").innerHTML=filtered.map(p=>`
+  <article class="card">
+   <h3>${esc(p.name)}</h3>
+   <span class="tag">${esc(typeNames[p.type]||"Obiekt")}</span>
+   <p class="small">Linie: ${esc((p.lines||[]).join(", ")||"Nie przypisano")}</p>
+  </article>`).join("");
+ document.getElementById("empty").classList.toggle("hidden",filtered.length!==0);
+ document.getElementById("stopCount").textContent=places.filter(p=>p.type==="stop").length;
+ document.getElementById("loopCount").textContent=places.filter(p=>p.type==="loop").length;
+ document.getElementById("depotCount").textContent=places.filter(p=>p.type==="depot").length;
+ renderAdmin();
+ renderMap();
+}
+function setFilter(value,button){
+ filter=value;
+ document.querySelectorAll("#wykaz button").forEach(b=>{b.classList.remove("active");b.classList.add("secondary");});
+ button.classList.add("active");button.classList.remove("secondary");
+ renderAll();
+}
+function renderMap(){
+ document.getElementById("mapList").innerHTML=routes.map(r=>`
+  <div class="mapline">
+   <h3>${esc(r.title)}</h3>
+   <div>${r.stops.map((s,i)=>`<span class="mapstop"><span class="stopdot"></span>${i+1}. ${esc(s)}</span>`).join(" → ")}</div>
+  </div>`).join("");
+}
+function renderLine(){
+ const name=document.getElementById("lineSelect").value;
+ const r=routes.find(x=>x.name===name);
+ const box=document.getElementById("lineDetails");
+ if(!r){box.innerHTML="<p>Wybierz linię.</p>";return;}
+ box.innerHTML=`<div class="route"><h3>${esc(r.title)}</h3><p class="small">Znane punkty zapisane dla tej linii:</p>
+ ${r.stops.map((s,i)=>`<p><span class="stopdot"></span><strong>${i+1}.</strong> ${esc(s)}</p>`).join("")}
+ <p class="small">Jeśli trasa jest niepełna, dodaj brakujące obiekty w panelu administratora i uzupełnij trasę w tablicy routes w kodzie.</p></div>`;
+}
+function renderAdmin(){
+ document.getElementById("adminList").innerHTML=places.map(p=>`
+  <article class="card">
+   <h3>${esc(p.name)}</h3>
+   <span class="tag">${esc(typeNames[p.type]||"Obiekt")}</span>
+   <p class="small">Linie: ${esc((p.lines||[]).join(", ")||"Brak")}</p>
+   <button class="delete" onclick="removePlace('${esc(p.id)}')">Usuń obiekt</button>
+  </article>`).join("");
+}
+function addPlace(){
+ const name=document.getElementById("newName").value.trim();
+ const type=document.getElementById("newType").value;
+ const lines=document.getElementById("newLine").value.split(",").map(s=>s.trim()).filter(Boolean);
+ if(!name){alert("Wpisz nazwę obiektu.");return;}
+ if(places.some(p=>p.name.toLocaleLowerCase("pl")===name.toLocaleLowerCase("pl"))){
+  alert("Obiekt o tej nazwie już istnieje.");return;
+ }
+ places.push({id:"custom-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),name,type,lines});
+ savePlaces();
+ document.getElementById("newName").value="";
+ document.getElementById("newLine").value="";
+ renderAll();
+ alert("Dodano obiekt do lokalnej bazy.");
+}
+function removePlace(id){
+ const p=places.find(x=>x.id===id);
+ if(!p)return;
+ if(!confirm("Czy usunąć obiekt: "+p.name+"?"))return;
+ places=places.filter(x=>x.id!==id);
+ savePlaces();renderAll();
+}
+function exportData(){
+ const blob=new Blob([JSON.stringify(places,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="transportowe-dzielnice-infrastruktura.json";a.click();
+ URL.revokeObjectURL(url);
+}
+function importData(event){
+ const file=event.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const data=JSON.parse(reader.result);
+   if(!Array.isArray(data)||!data.every(p=>p&&typeof p.name==="string"&&["stop","loop","depot"].includes(p.type))){
+    throw new Error("Nieprawidłowy format bazy.");
+   }
+   places=data.map((p,i)=>({id:String(p.id||"import-"+i),name:p.name,type:p.type,lines:Array.isArray(p.lines)?p.lines.map(String):[]}));
+   savePlaces();renderAll();alert("Zaimportowano bazę.");
+  }catch(e){alert("Nie udało się wczytać pliku JSON.");}
+  event.target.value="";
+ };
+ reader.readAsText(file);
+}
+function resetData(){
+ if(!confirm("Przywrócić bazę początkową? Usunie to własne zmiany w tej przeglądarce."))return;
+ places=JSON.parse(JSON.stringify(initialPlaces));
+ savePlaces();renderAll();
+}
+document.getElementById("lineSelect").innerHTML=routes.map(r=>`<option value="${esc(r.name)}">${esc(r.name)} — ${esc(r.title)}</option>`).join("");
+renderAll();
+renderLine();
+</script>
+</body>
+  </html>
+  
